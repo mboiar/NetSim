@@ -6,8 +6,13 @@ set(CMAKE_CXX_STANDARD 17)
 # turn tests compilation on/off
 set(BUILD_TESTS ON)
 
-# edit extra compilation flags
-add_compile_options(-Wall -Wextra -Werror -Wpedantic -pedantic-errors -Wconversion)
+# Set default compile flags for GCC
+if(CMAKE_CXX_COMPILER_ID STREQUAL GNU)
+    message(STATUS "GCC detected, adding compile flags")
+    add_compile_options(-Wall -Wextra -Werror -Wpedantic -pedantic-errors -Wconversion)
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL Clang)
+add_compile_options(/Z7 /W4 /wd4146 /wd4245 /RTCcsu)
+endif(CMAKE_CXX_COMPILER_ID STREQUAL GNU)
 
 include_directories(
         include
