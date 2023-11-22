@@ -1,0 +1,6 @@
+#ifndef IMPLEMENTATION_HELPERS_HPP
+#define IMPLEMENTATION_HELPERS_HPP
+
+// generator liczb losowych
+
+#endif //IMPLEMENTATION_HELPERS_HPP
