@@ -11,5 +11,10 @@ set(SOURCE_FILES
         src/package.cpp
         )
 
-add_compile_options(-Wall -Wextra -Wpedantic -pedantic-errors -Wconversion)
+if(CMAKE_CXX_COMPILER_ID STREQUAL GNU)
+        message(STATUS "GCC detected, adding compile flags")
+        add_compile_options(-Wall -Wextra -Werror -Wpedantic -pedantic-errors -Wconversion)
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL MSVC)
+        add_compile_options(/Z7 /W4 /wd4146 /wd4245 /RTCcsu)
+endif(CMAKE_CXX_COMPILER_ID STREQUAL GNU)
 add_executable(main ${SOURCE_FILES} main.cpp)
