@@ -1,5 +1,7 @@
 #include "package.hpp"
-#include "types.hpp"
+
+std::set<ElementID> Package::assigned_IDs {0};
+std::set<ElementID> Package::freed_IDs;
 
 Package::Package(){
     ElementID new_id;
