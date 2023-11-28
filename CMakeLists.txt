@@ -19,7 +19,7 @@ include_directories(
 )
 
 set(SOURCE_FILES
-
+    src/package.cpp
         )
 
 add_executable(main ${SOURCE_FILES} main.cpp)

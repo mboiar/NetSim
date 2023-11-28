@@ -2,5 +2,6 @@
 #define IMPLEMENTATION_TYPES_HPP
 
 // aliasy
+using ElementID = int;
 
 #endif //IMPLEMENTATION_TYPES_HPP
