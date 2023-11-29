@@ -10,10 +10,13 @@ public:
     using const_iterator = std::list<Package>::const_iterator;
 };
 
-class IPackageQueue{};
+class IPackageQueue : public IPackageStockpile {};
 
-class PackageQueue{};
+class PackageQueue: public IPackageQueue {};
 
-enum PackageQueueType{};
+enum PackageQueueType{
+    FIFO,
+    LIFO
+};
 
 #endif //IMPLEMENTATION_STORAGE_TYPES_HPP

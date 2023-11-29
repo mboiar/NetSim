@@ -16,10 +16,11 @@ endif(CMAKE_CXX_COMPILER_ID STREQUAL GNU)
 
 include_directories(
         include
+        mocks
 )
 
 set(SOURCE_FILES
-
+    src/nodes.cpp
         )
 
 add_executable(main ${SOURCE_FILES} main.cpp)
@@ -40,7 +41,7 @@ if ((DEFINED BUILD_TESTS) AND (BUILD_TESTS STREQUAL "ON"))
     set(SOURCES_FILES_TESTS
 #            test/test_Factory.cpp
 #            test/test_factory_io.cpp
-#            test/test_nodes.cpp
+            test/test_nodes.cpp
 #            test/test_package.cpp
 #            test/test_reports.cpp
 #            test/test_simulate.cpp
