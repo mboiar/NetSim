@@ -16,10 +16,11 @@ endif(CMAKE_CXX_COMPILER_ID STREQUAL GNU)
 
 include_directories(
         include
+        mocks
 )
 
 set(SOURCE_FILES
-
+    src/simulation.cpp
         )
 
 add_executable(main ${SOURCE_FILES} main.cpp)
