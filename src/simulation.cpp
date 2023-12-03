@@ -3,18 +3,25 @@
 #include "simulation.hpp"
 #include "reports.hpp"
 
-void simulate(Factory& f, TimeOffset d, std::function<void(Factory&, Time)>){
-    // TODO check graph
-    if (false){
-        throw std::logic_error("Niespójna sieć");
+void simulate(Factory& f, TimeOffset d, std::function<void(Factory&, Time)> rf){
+    if (!f.is_consistent()){
+        throw std::logic_error("Inconsistent graph");
     }
 
-    // Stage I: Delivery
+    Time sim_time = 0;
 
-    // Stage II: Transport
+    while(sim_time < d){
+        sim_time++;
+        // Stage I: Delivery
+        f.do_deliveries();
 
-    // Stage III: Processing
+        // Stage II: Transport
+        f.do_package_passing();
 
-    // Stage IV: Reporting
+        // Stage III: Processing
+        f.do_work();
 
+        // Stage IV: Reporting
+        rf(f, sim_time);
+    }
 }
