@@ -48,7 +48,7 @@ if ((DEFINED BUILD_TESTS) AND (BUILD_TESTS STREQUAL "ON"))
 #            test/test_storage_types.cpp
             )
     set( TEST_SRC
-
+            src/nodes.cpp
             )
     set(EXEC_TEST main__test)
     add_executable(${EXEC_TEST} ${TEST_SRC} ${SOURCES_FILES_TESTS} test/main_gtest.cpp)
