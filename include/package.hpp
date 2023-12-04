@@ -10,11 +10,12 @@
 class Package{
 public:
     Package();
-    Package(ElementID);
 
-    Package(Package&&);
+    explicit Package(ElementID);
 
-    Package & operator = (Package&&);
+    Package(Package&&) noexcept = default;
+
+    Package& operator=(Package&&) = default;
 
     ElementID get_id() const;
 

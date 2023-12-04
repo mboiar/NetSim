@@ -17,3 +17,17 @@ Package::Package(){
     assigned_IDs.insert(new_id);
     id = new_id;
 }
+
+Package::Package(ElementID el_id) {
+    id = el_id;
+    assigned_IDs.insert(el_id);
+}
+
+ElementID Package::get_id() const {
+    return id;
+}
+
+Package::~Package() {
+    assigned_IDs.erase(id);
+    freed_IDs.insert(id);
+}
