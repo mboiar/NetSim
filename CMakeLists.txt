@@ -9,7 +9,8 @@ include_directories(
 
 set(SOURCE_FILES
         src/package.cpp
-        )
+        src/storage_types.cpp
+)
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL GNU)
         message(STATUS "GCC detected, adding compile flags")
@@ -36,7 +37,7 @@ if ((DEFINED BUILD_TESTS) AND (BUILD_TESTS STREQUAL "ON"))
                 #            test/test_Factory.cpp
                 #            test/test_factory_io.cpp
                 #            test/test_nodes.cpp
-                #            test/test_package.cpp
+                            test/test_package.cpp
                 #            test/test_reports.cpp
                 #            test/test_simulate.cpp
                 #            test/test_storage_types.cpp

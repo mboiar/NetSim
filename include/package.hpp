@@ -13,7 +13,10 @@ public:
 
     explicit Package(ElementID);
 
-    Package(Package&&) noexcept = default;
+    Package(Package&&) = default;
+    Package(Package&) = default;
+
+    Package(const Package& pckg);
 
     Package& operator=(Package&&) = default;
 

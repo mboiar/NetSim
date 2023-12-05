@@ -31,3 +31,7 @@ Package::~Package() {
     assigned_IDs.erase(id);
     freed_IDs.insert(id);
 }
+
+Package::Package(const Package& pckg) {
+    id = pckg.id;
+}
