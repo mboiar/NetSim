@@ -32,6 +32,4 @@ Package::~Package() {
     freed_IDs.insert(id);
 }
 
-Package::Package(const Package& pckg) {
-    id = pckg.id;
-}
+

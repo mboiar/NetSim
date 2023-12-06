@@ -11,12 +11,11 @@ class Package{
 public:
     Package();
 
-    explicit Package(ElementID);
+    Package(ElementID);
 
     Package(Package&&) = default;
-    Package(Package&) = default;
 
-    Package(const Package& pckg);
+    Package(const Package& pckg) = default;
 
     Package& operator=(Package&&) = default;
 

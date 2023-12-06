@@ -14,10 +14,12 @@ class IPackageStockpile{
 public:
     using const_iterator = std::list<Package>::const_iterator;
     void push(Package&&);
-    bool empty();
-    size_t size();
-    virtual const_iterator cbegin() const = 0;
-    virtual const_iterator cend() const = 0;
+    bool empty() const;
+    size_t size() const;
+    const_iterator cbegin() const {return queue.cbegin();}
+    const_iterator begin() {return queue.begin();}
+    const_iterator cend() const {return queue.cend();}
+    const_iterator end()  {return queue.end();}
     virtual ~IPackageStockpile() = default;
 protected:
     std::list<Package> queue;
@@ -34,11 +36,9 @@ protected:
 
 class PackageQueue: public IPackageQueue {
 public:
-    explicit PackageQueue(PackageQueueType);
+    PackageQueue(PackageQueueType);
     ~PackageQueue() = default;
 
 };
-
-
 
 #endif //IMPLEMENTATION_STORAGE_TYPES_HPP
