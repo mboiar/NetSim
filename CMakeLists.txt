@@ -3,6 +3,8 @@ project(implementation)
 
 set(CMAKE_CXX_STANDARD 17)
 
+set(BUILD_TESTS ON)
+
 include_directories(
         include
 )
@@ -36,13 +38,13 @@ if ((DEFINED BUILD_TESTS) AND (BUILD_TESTS STREQUAL "ON"))
                 #            test/test_Factory.cpp
                 #            test/test_factory_io.cpp
                 #            test/test_nodes.cpp
-                #            test/test_package.cpp
+                            test/test_package.cpp
                 #            test/test_reports.cpp
                 #            test/test_simulate.cpp
                 #            test/test_storage_types.cpp
         )
         set( TEST_SRC
-
+                src/package.cpp
         )
         set(EXEC_TEST main__test)
         add_executable(${EXEC_TEST} ${TEST_SRC} ${SOURCES_FILES_TESTS} test/main_gtest.cpp)
