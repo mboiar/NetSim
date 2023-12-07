@@ -16,7 +16,7 @@ set(SOURCE_FILES
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL GNU)
         message(STATUS "GCC detected, adding compile flags")
-        add_compile_options(-Wall -Wextra -Werror -Wpedantic -pedantic-errors -Wconversion)
+        add_compile_options(-Wall -Wextra -Werror -Wpedantic -pedantic-errors -Wconversion -Wno-error=pessimizing-move)
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL MSVC)
         add_compile_options(/Z7 /W4 /wd4146 /wd4245 /RTCcsu)
 endif(CMAKE_CXX_COMPILER_ID STREQUAL GNU)
@@ -46,6 +46,7 @@ if ((DEFINED BUILD_TESTS) AND (BUILD_TESTS STREQUAL "ON"))
         )
         set( TEST_SRC
                 src/package.cpp
+                src/storage_types.cpp
         )
         set(EXEC_TEST main__test)
         add_executable(${EXEC_TEST} ${TEST_SRC} ${SOURCES_FILES_TESTS} test/main_gtest.cpp)

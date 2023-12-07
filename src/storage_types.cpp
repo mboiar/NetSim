@@ -5,15 +5,7 @@ PackageQueue::PackageQueue(PackageQueueType type) {
     queue = std::list<Package>();
 }
 
-PackageQueueType IPackageQueue::get_queue_type() {
-    return queueType;
-}
-
-void IPackageStockpile::push(Package&& pckg) {
-    queue.emplace_back(std::move(pckg));
-}
-
-Package IPackageQueue::pop() {
+Package PackageQueue::pop() {
     if (queueType == LIFO) {
         auto val = queue.back();
         queue.pop_back();
@@ -23,12 +15,4 @@ Package IPackageQueue::pop() {
         queue.pop_front();
         return val;
     }
-}
-
-bool IPackageStockpile::empty() const{
-    return queue.empty();
-}
-
-size_t IPackageStockpile::size() const{
-    return queue.size();
 }
