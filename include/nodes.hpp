@@ -30,7 +30,7 @@ protected:
 
 class Storehouse: public IPackageReceiver {
 public:
-    Storehouse(ElementID id, std::unique_ptr<IPackageStockpile> d = std::make_unique<PackageQueue>()): id_(id), storage_(std::move(d)){};
+    Storehouse(ElementID id, std::unique_ptr<IPackageStockpile> d = std::make_unique<PackageQueue>(PackageQueueType::LIFO)): id_(id), storage_(std::move(d)){};
     void receive_package(Package&& p) override;
     ElementID get_id() const override { return id_; }
     IPackageStockpile::const_iterator cbegin() const override { return storage_->cbegin(); }
@@ -44,7 +44,7 @@ private:
 
 class ReceiverPreferences{
 public:
-    ReceiverPreferences(ProbabilityGenerator pg = default_probability_generator): pg_(std::move(pg)){};
+    ReceiverPreferences(ProbabilityGenerator pg = probability_generator): pg_(std::move(pg)){};
     using preferences_t = std::map<IPackageReceiver*, double>;
     using const_iterator = preferences_t::const_iterator;
     void add_receiver(IPackageReceiver* r);

@@ -1,26 +1,25 @@
 #include "nodes.hpp"
 
 void Storehouse::receive_package(Package&& p) {
-    storage_->push(p);
+    storage_->push(std::move(p));
 }
 
 void Worker::receive_package(Package&& p) {
-    q_->push(p);
+    q_->push(std::move(p));
 }
 
 void ReceiverPreferences::add_receiver(IPackageReceiver* r){
-    double preference = pg_();// TODO sum to 1
-    preferences_.emplace(r, preference);
-    for (auto item: preferences_){
-        item.second /= (1 + preference);
+    preferences_.emplace(r, 0.0);
+
+    for (auto& item: preferences_){
+        item.second = 1/(double)preferences_.size();
     }
 }
 
 void ReceiverPreferences::remove_receiver(IPackageReceiver* r) {
-    double diff = preferences_.at(r);
     preferences_.erase(r);
-    for (auto item: preferences_){
-        item.second /= (1 - diff);
+    for (auto& item: preferences_){
+        item.second = 1/(double)preferences_.size();
     }
 }
 
@@ -34,16 +33,19 @@ IPackageReceiver* ReceiverPreferences::choose_receiver() {
             return item.first;
         }
     }
+    return preferences_.rbegin()->first;
 }
 
 void PackageSender::send_package() {
     if (buffer_) {
-        receiver_preferences_.choose_receiver()->receive_package(std::move(buffer_.value()));
+        IPackageReceiver* rec = receiver_preferences_.choose_receiver();
+        rec->receive_package(std::move(buffer_.value()));
+        buffer_.reset();
     }
 }
 
 void Ramp::deliver_goods(Time t) {
-    if (t % di_ == 0){
+    if (t % di_ == 1){
         push_package(Package());
     }
 }
@@ -56,7 +58,7 @@ void Worker::do_work(Time t) {
             return;
         }
     }
-    if (t - (pst_ + pd_) == 0){ // if work finished
+    if (t - (pst_ + pd_ - 1) == 0){ // if work finished
         push_package(std::move(q_->pop()));
         pst_ = 0;
     }

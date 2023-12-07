@@ -7,11 +7,14 @@ set(BUILD_TESTS ON)
 
 include_directories(
         include
+        mocks
 )
 
 set(SOURCE_FILES
         src/package.cpp
         src/storage_types.cpp
+        src/nodes.cpp
+        src/helpers.cpp
 )
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL GNU)
@@ -33,12 +36,11 @@ if ((DEFINED BUILD_TESTS) AND (BUILD_TESTS STREQUAL "ON"))
         FetchContent_MakeAvailable(googletest)
         enable_testing()
 
-        target_compile_definitions(main PUBLIC EXERCISE_ID=EXERCISE_ID_PACKAGES)
 
         set(SOURCES_FILES_TESTS
                 #            test/test_Factory.cpp
                 #            test/test_factory_io.cpp
-                #            test/test_nodes.cpp
+                test/test_nodes.cpp
                 test/test_package.cpp
                 #            test/test_reports.cpp
                 #            test/test_simulate.cpp
@@ -47,9 +49,12 @@ if ((DEFINED BUILD_TESTS) AND (BUILD_TESTS STREQUAL "ON"))
         set( TEST_SRC
                 src/package.cpp
                 src/storage_types.cpp
+                src/helpers.cpp
+                src/nodes.cpp
         )
         set(EXEC_TEST main__test)
         add_executable(${EXEC_TEST} ${TEST_SRC} ${SOURCES_FILES_TESTS} test/main_gtest.cpp)
+        target_compile_definitions(${EXEC_TEST} PUBLIC EXERCISE_ID=EXERCISE_ID_NODES)
         target_link_libraries(${EXEC_TEST} PRIVATE GTest::gtest_main GTest::gmock_main)
         include(GoogleTest)
         gtest_discover_tests(${EXEC_TEST})
