@@ -36,21 +36,21 @@ public:
 
     //IPackageQueue
     Package pop() override;
-    PackageQueueType get_queue_type() override {return queueType;}
+    PackageQueueType get_queue_type() override {return queueType_;}
 
     //IPackageStockpile
-    void push(Package&& package) override {queue.emplace_back(package);}
-    bool empty() const override {return queue.empty();}
-    size_t size() const override {return queue.size();}
-    const_iterator cbegin() const override {return queue.cbegin();}
-    const_iterator begin() const override {return queue.begin();}
-    const_iterator cend() const override {return queue.cend();}
-    const_iterator end() const override {return queue.end();}
+    void push(Package&& package) override {queue_.emplace_back(package);}
+    bool empty() const override {return queue_.empty();}
+    size_t size() const override {return queue_.size();}
+    const_iterator cbegin() const override {return queue_.cbegin();}
+    const_iterator begin() const override {return queue_.begin();}
+    const_iterator cend() const override {return queue_.cend();}
+    const_iterator end() const override {return queue_.end();}
 
     ~PackageQueue() = default;
 private:
-    std::list<Package> queue;
-    PackageQueueType queueType;
+    std::list<Package> queue_;
+    PackageQueueType queueType_;
 };
 
 #endif //IMPLEMENTATION_STORAGE_TYPES_HPP
