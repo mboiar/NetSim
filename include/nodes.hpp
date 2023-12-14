@@ -20,7 +20,7 @@ class IPackageReceiver{
 public:
     IPackageReceiver() = default;
     virtual void receive_package(Package&& p) = 0;
-    virtual ReceiverType get_receiver_type() const = 0;
+    virtual ReceiverType get_receiver_type() const { return receiver_type_; }
     virtual ElementID get_id() const = 0;
     virtual IPackageStockpile::const_iterator cbegin() const = 0;
     virtual IPackageStockpile::const_iterator cend() const = 0;
