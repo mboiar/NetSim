@@ -33,7 +33,7 @@ bool Factory::is_consistent() {
         try {
             has_reachable_storehouse(ramp_ptr, node_colors);
         }
-        catch (std::string& msg) {
+        catch (std::logic_error& error) {
             return false;
         }
     }

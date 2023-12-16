@@ -65,7 +65,7 @@ private:
     NodeCollection<Worker> workers_;
     NodeCollection<Storehouse> storehouses_;
     template <class Node>
-    void remove_receiver(NodeCollection<Node> collection, ElementID id) { collection.remove_by_id(id); }
+    void remove_receiver(NodeCollection<Node>& collection, ElementID id) { collection.remove_by_id(id); }
 };
 
 // zapis i odczyt
