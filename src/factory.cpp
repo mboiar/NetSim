@@ -1,4 +1,7 @@
+#include <stdexcept>
+#include <string>
 #include "factory.hpp"
+
 
 
 void Factory::do_deliveries(Time time) {
@@ -19,9 +22,45 @@ void Factory::do_work(Time time) {
 }
 
 bool Factory::is_consistent() {
-    return false;
+    std::map<const PackageSender *, NodeColor> node_colors;
+    for (Worker &worker: workers_) {
+        const PackageSender *worker_ptr = &worker;
+        node_colors[worker_ptr] = NodeColor::UNVISITED;
+    }
+    for (Ramp &ramp: ramps_) {
+        const PackageSender *ramp_ptr = &ramp;
+        node_colors[ramp_ptr] = NodeColor::UNVISITED;
+        try {
+            has_reachable_storehouse(ramp_ptr, node_colors);
+        }
+        catch (std::string& msg) {
+            return false;
+        }
+    }
+    return true;
 }
 
-void Factory::remove_worker(ElementID id) {
-    workers_.remove_by_id(id);
+bool Factory::has_reachable_storehouse(const PackageSender *sender,
+                                       std::map<const PackageSender *, NodeColor> &node_colors) {
+    if (node_colors[sender] == NodeColor::VERIFIED) return true;
+    node_colors[sender] = NodeColor::VISITED;
+
+    if (sender->receiver_preferences_.get_preferences().empty()) throw std::logic_error("Sender has no receivers");
+
+    bool other_receiver = false;
+    for (auto& [receiver, priority] : sender->receiver_preferences_.get_preferences()) {
+        if (receiver->get_receiver_type() == ReceiverType::Storehouse) other_receiver = true;
+        else if (receiver->get_receiver_type() == ReceiverType::Worker) {
+            IPackageReceiver* receiver_ptr = receiver;
+            auto worker_ptr = dynamic_cast<Worker*>(receiver_ptr);
+            auto sendrecv_ptr = dynamic_cast<PackageSender*>(worker_ptr);
+            if (sendrecv_ptr == sender) continue;
+            other_receiver = true;
+            if (node_colors[sendrecv_ptr] == NodeColor::UNVISITED) has_reachable_storehouse(sendrecv_ptr, node_colors);
+        }
+    }
+    node_colors[sender] = NodeColor::VERIFIED;
+
+    if (other_receiver) return true;
+    else throw std::logic_error("Sender has no receiver other than themself");
 }
