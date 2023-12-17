@@ -20,6 +20,7 @@ class IPackageReceiver{
 public:
     IPackageReceiver() = default;
     virtual void receive_package(Package&& p) = 0;
+    virtual ReceiverType get_receiver_type() const { return receiver_type_; }
     virtual ElementID get_id() const = 0;
     virtual IPackageStockpile::const_iterator cbegin() const = 0;
     virtual IPackageStockpile::const_iterator cend() const = 0;
@@ -32,6 +33,7 @@ class Storehouse: public IPackageReceiver {
 public:
     Storehouse(ElementID id, std::unique_ptr<IPackageStockpile> d = std::make_unique<PackageQueue>(PackageQueueType::LIFO)): id_(id), storage_(std::move(d)){};
     void receive_package(Package&& p) override;
+    ReceiverType get_receiver_type() const override { return receiver_type_; }
     ElementID get_id() const override { return id_; }
     IPackageStockpile::const_iterator cbegin() const override { return storage_->cbegin(); }
     IPackageStockpile::const_iterator cend() const override { return storage_->cend(); }
@@ -92,6 +94,7 @@ public:
     TimeOffset get_processing_duration() const { return pd_; };
     Time get_package_processing_start_time() const { return pst_; };
     void receive_package(Package&& p) override;
+    ReceiverType get_receiver_type() const override { return receiver_type_; }
     ElementID get_id() const override { return id_; }
     IPackageStockpile::const_iterator cbegin() const override { return q_->cbegin(); }
     IPackageStockpile::const_iterator cend() const override { return q_->cend(); }

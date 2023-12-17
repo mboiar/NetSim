@@ -15,6 +15,7 @@ set(SOURCE_FILES
         src/storage_types.cpp
         src/nodes.cpp
         src/helpers.cpp
+        src/factory.cpp
 )
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL GNU)
@@ -38,8 +39,8 @@ if ((DEFINED BUILD_TESTS) AND (BUILD_TESTS STREQUAL "ON"))
 
 
         set(SOURCES_FILES_TESTS
-                #            test/test_Factory.cpp
-                #            test/test_factory_io.cpp
+                test/test_Factory.cpp
+                #test/test_factory_io.cpp
                 test/test_nodes.cpp
                 test/test_package.cpp
                 #            test/test_reports.cpp
@@ -51,6 +52,7 @@ if ((DEFINED BUILD_TESTS) AND (BUILD_TESTS STREQUAL "ON"))
                 src/storage_types.cpp
                 src/helpers.cpp
                 src/nodes.cpp
+                src/factory.cpp
         )
         set(EXEC_TEST main__test)
         add_executable(${EXEC_TEST} ${TEST_SRC} ${SOURCES_FILES_TESTS} test/main_gtest.cpp)
