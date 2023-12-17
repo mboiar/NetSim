@@ -64,3 +64,22 @@ bool Factory::has_reachable_storehouse(const PackageSender *sender,
     if (other_receiver) return true;
     else throw std::logic_error("Sender has no receiver other than themself");
 }
+
+void Factory::remove_storehouse(ElementID id) {
+    remove_receiver(storehouses_, id);
+    storehouses_.remove_by_id(id);
+}
+
+void Factory::remove_worker(ElementID id) {
+    remove_receiver(workers_, id);
+    workers_.remove_by_id(id);
+}
+
+template <class Node>
+void Factory::remove_receiver(NodeCollection<Node> &collection, ElementID id) {
+    auto ptr = dynamic_cast<IPackageReceiver*>(&(*collection.find_by_id(id)));
+    for (Worker& sender: workers_) sender.receiver_preferences_.remove_receiver(ptr);
+    if (std::is_same<Node, Worker>::value) {
+        for (Ramp& sender: ramps_) sender.receiver_preferences_.remove_receiver(ptr);
+    }
+}
