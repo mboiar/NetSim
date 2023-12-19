@@ -13,13 +13,13 @@ void simulate(Factory& f, TimeOffset d, std::function<void(Factory&, Time)> rf){
     while(sim_time < d){
         sim_time++;
         // Stage I: Delivery
-        f.do_deliveries();
+        f.do_deliveries(sim_time);
 
         // Stage II: Transport
         f.do_package_passing();
 
         // Stage III: Processing
-        f.do_work();
+        f.do_work(sim_time);
 
         // Stage IV: Reporting
         rf(f, sim_time);
