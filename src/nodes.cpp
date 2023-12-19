@@ -17,9 +17,11 @@ void ReceiverPreferences::add_receiver(IPackageReceiver* r){
 }
 
 void ReceiverPreferences::remove_receiver(IPackageReceiver* r) {
-    preferences_.erase(r);
-    for (auto& item: preferences_){
-        item.second = 1/(double)preferences_.size();
+    auto num_of_removed = preferences_.erase(r);
+    if (num_of_removed > 0) {
+        for (auto& item: preferences_){
+            item.second = 1/(double)preferences_.size();
+        }
     }
 }
 
