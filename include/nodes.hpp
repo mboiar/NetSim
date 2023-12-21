@@ -98,6 +98,7 @@ public:
     ElementID get_id() const override { return id_; }
     IPackageStockpile::const_iterator cbegin() const override { return q_->cbegin(); }
     IPackageStockpile::const_iterator cend() const override { return q_->cend(); }
+    IPackageQueue* get_queue() const { return q_.get(); }
 
 private:
     ElementID id_;
