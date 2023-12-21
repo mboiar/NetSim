@@ -85,7 +85,65 @@ void Factory::remove_receiver(NodeCollection<Node> &collection, ElementID id) {
 }
 
 // IO
+std::list<std::pair<std::string, std::string>> make_pairs(const Ramp& sender){
+    std::list<std::pair<std::string, std::string>> result;
 
+    std::string sender_type = "ramp";
+
+    std::string sender_id = std::to_string(sender.get_id());
+
+    std::string sender_string = sender_type + "-" + sender_id;
+
+    std::map<IPackageReceiver*, double> receiver_list = sender.receiver_preferences_.get_preferences();
+    for(auto& receiver : receiver_list) {
+        ReceiverType type = receiver.first->get_receiver_type();
+        std::string receiver_type;
+        if (type == ReceiverType::Worker) {
+            receiver_type = "worker";
+        } else {
+            receiver_type = "store";
+        }
+        ElementID receiver_id_int = receiver.first->get_id();
+        std::string receiver_id = std::to_string(receiver_id_int);
+
+        std::string receiver_string = receiver_type + "-" + receiver_id;
+
+        std::pair<std::string, std::string> pair = std::make_pair(sender_string, receiver_string);
+        result.insert(result.end(), pair);
+    }
+
+    return result;
+}
+
+std::list<std::pair<std::string, std::string>> make_pairs(const Worker& sender){
+    std::list<std::pair<std::string, std::string>> result;
+
+    std::string sender_type = "worker";
+
+    std::string sender_id = std::to_string(sender.get_id());
+
+    std::string sender_string = sender_type + "-" + sender_id;
+
+    std::map<IPackageReceiver*, double> receiver_list = sender.receiver_preferences_.get_preferences();
+    for(auto& receiver : receiver_list) {
+        ReceiverType type = receiver.first->get_receiver_type();
+        std::string receiver_type;
+        if (type == ReceiverType::Worker) {
+            receiver_type = "worker";
+        } else {
+            receiver_type = "store";
+        }
+        ElementID receiver_id_int = receiver.first->get_id();
+        std::string receiver_id = std::to_string(receiver_id_int);
+
+        std::string receiver_string = receiver_type + "-" + receiver_id;
+
+        std::pair<std::string, std::string> pair = std::make_pair(sender_string, receiver_string);
+        result.insert(result.end(), pair);
+    }
+
+    return result;
+}
 
 ParsedLineData parse_line(std::string line){
     ParsedLineData out;
@@ -183,17 +241,31 @@ void save_factory_structure(Factory& factory, std::ostream& os){
     os << "; == LOADING RAMPS ==" << std::endl;
     os.put(os.widen('\n'));
 
-    for(auto i = factory.ramp_cbegin(); i != factory.ramp_cend();i++){
+    for(auto i = factory.ramp_cbegin(); i != factory.ramp_cend();i++)
         os << "LOADING_RAMP id=" << (*i).get_id() << " delivery-interval=" << (*i).get_delivery_interval() << "\n";
-    }
+
     os << "; == WORKERS ==\n\n" << std::endl;
     for(auto i = factory.worker_cbegin(); i != factory.worker_cend();i++){
-        os << "WORKER id=" << (*i).get_id() << " processing-time=" << (*i).get_processing_duration() << " queue-type=" << (*i).get_queue() << "\n";
+        std::string type = (*i).get_queue()->get_queue_type() == PackageQueueType::FIFO ? "FIFO" : "LIFO";
+        os << "WORKER id=" << (*i).get_id() << " processing-time=" << (*i).get_processing_duration() << " queue-type=" << type << "\n";
     }
+
     os << "; == STOREHOUSES ==\n\n" << std::endl;
-    for(auto i = factory.storehouse_cbegin(); i != factory.storehouse_cend();i++){
+    for(auto i = factory.storehouse_cbegin(); i != factory.storehouse_cend();i++)
         os << "STOREHOUSE id=" << (*i).get_id() << "\n";
+
+
+    std::list<std::pair<std::string, std::string>> links;
+    for (auto ramp = factory.ramp_cbegin(); ramp != factory.ramp_cend();ramp++) {
+        links.merge(make_pairs(*ramp));
     }
-    os << "; == LINKS ==\n\n" << std::endl;
+
+    for (auto worker = factory.worker_cbegin(); worker != factory.worker_cend();worker++) {
+        links.merge(make_pairs(*worker));
+    }
+
+    for(auto i = links.cbegin(); i != links.cend(); i++){
+        os << "LINK src=" << (*i).first << " dest=" << (*i).second <<"\n";
+    }
 }
 
