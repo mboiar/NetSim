@@ -99,19 +99,13 @@ ParsedLineData parse_line(std::string line){
 
     if(token == "LOADING_RAMP"){
         out.type = RAMP;
+    } else if(token == "WORKER"){
+        out.type = WORKER;
+    } else if(token == "STOREHOUSE"){
+        out.type = STOREHOUSE;
+    } else if(token == "LINK"){
+        out.type = LINK;
     }
-    else
-        if(token == "WORKER"){
-            out.type = WORKER;
-        }
-        else
-            if(token == "STOREHOUSE"){
-                out.type = STOREHOUSE;
-            }
-            else
-                if(token == "LINK"){
-                    out.type = LINK;
-                }
 
     while (std::getline(token_stream, token, delimiter)) {
         std::string key = token.substr(0, token.find(id_delimiter));
@@ -133,64 +127,53 @@ Factory load_factory_structure(std::istream& is){
         }
         ParsedLineData elem = parse_line(line);
 
-        if(elem.type == RAMP){
+        if(elem.type == RAMP) {
             ElementID id = (unsigned)std::stoi((*elem.map.find("id")).second);
             TimeOffset di = std::stoi((*elem.map.find("delivery-interval")).second);
             factory.add_ramp(Ramp(id,di));
-        }
-        else
-            if(elem.type == WORKER){
-                ElementID id = (unsigned)std::stoi((*elem.map.find("id")).second);
-                TimeOffset pt = std::stoi((*elem.map.find("processing-time")).second);
-                std::string unt_pt = (*elem.map.find("queue-type")).second;
-                PackageQueueType typeQueue;
+        } else if(elem.type == WORKER) {
+            ElementID id = (unsigned)std::stoi((*elem.map.find("id")).second);
+            TimeOffset pt = std::stoi((*elem.map.find("processing-time")).second);
+            std::string unt_pt = (*elem.map.find("queue-type")).second;
+            PackageQueueType typeQueue;
 
-                typeQueue = (*elem.map.find("queue-type")).second == "LIFO" ? PackageQueueType::LIFO : PackageQueueType::FIFO;
+            typeQueue = (*elem.map.find("queue-type")).second == "LIFO" ? PackageQueueType::LIFO : PackageQueueType::FIFO;
 
-                std::unique_ptr<PackageQueue> q = std::make_unique<PackageQueue>(PackageQueue(typeQueue));
-                factory.add_worker(Worker(id, pt, std::move(q)));
-            }
-            else
-                if(elem.type == STOREHOUSE){
-                    ElementID id = (unsigned)std::stoi((*elem.map.find("id")).second);
-                    factory.add_storehouse(Storehouse(id));
+            std::unique_ptr<PackageQueue> q = std::make_unique<PackageQueue>(PackageQueue(typeQueue));
+            factory.add_worker(Worker(id, pt, std::move(q)));
+        } else if(elem.type == STOREHOUSE) {
+            ElementID id = (unsigned)std::stoi((*elem.map.find("id")).second);
+            factory.add_storehouse(Storehouse(id));
+        } else if(elem.type == LINK) {
+            std::string src = (*elem.map.find("src")).second;
+            std::string dest = (*elem.map.find("dest")).second;
+
+            ElementID src_id = (unsigned)std::stoi(src.substr(src.find('-')+1, src.size()-1));
+            ElementID dest_id = (unsigned)std::stoi(dest.substr(dest.find('-')+1, dest.size()-1));
+
+            char src_type = src[0];
+            char dest_type = dest[0];
+
+            if(src_type == 'r'){
+                if(dest_type == 'w') {
+                    auto ptr = dynamic_cast<IPackageReceiver *>(&(*factory.find_worker_by_id(dest_id)));
+                    factory.find_ramp_by_id(src_id)->receiver_preferences_.add_receiver(ptr);
+                } else if(dest_type == 's'){
+                    auto ptr = dynamic_cast<IPackageReceiver *>(&(*factory.find_storehouse_by_id(dest_id)));
+                    factory.find_ramp_by_id(src_id)->receiver_preferences_.add_receiver(ptr);
                 }
-                else
-                    if(elem.type == LINK){
-                        std::string src = (*elem.map.find("src")).second;
-                        std::string dest = (*elem.map.find("dest")).second;
+            }
 
-                        ElementID src_id = (ElementID)src[src.find('-') + 1];
-                        ElementID dest_id = (ElementID)dest[dest.find('-') + 1];
-
-                        char src_type = src[0];
-                        char dest_type = dest[0];
-
-                        if(src_type == 'r'){
-                            if(dest_type == 'w') {
-                                auto ptr = dynamic_cast<IPackageReceiver *>(&(*factory.find_worker_by_id(dest_id)));
-                                factory.find_ramp_by_id(src_id)->receiver_preferences_.add_receiver(ptr);
-                            }
-                            else
-                                if(dest_type == 's'){
-                                    auto ptr = dynamic_cast<IPackageReceiver *>(&(*factory.find_storehouse_by_id(dest_id)));
-                                    factory.find_ramp_by_id(src_id)->receiver_preferences_.add_receiver(ptr);
-                                }
-                        }
-
-                        if(src_type == 'w'){
-                            if(dest_type == 'w'){
-                                auto ptr = dynamic_cast<IPackageReceiver*>(&(*factory.find_worker_by_id(dest_id)));
-                                factory.find_worker_by_id(src_id)->receiver_preferences_.add_receiver(ptr);
-                            }
-                            else{
-                                auto ptr = dynamic_cast<IPackageReceiver*>(&(*factory.find_storehouse_by_id(dest_id)));
-                                factory.find_worker_by_id(src_id)->receiver_preferences_.add_receiver(ptr);
-                            }
-                        }
-                    }
-                    else
-                        continue;
+            if(src_type == 'w'){
+                if(dest_type == 'w'){
+                    auto ptr = dynamic_cast<IPackageReceiver*>(&(*factory.find_worker_by_id(dest_id)));
+                    factory.find_worker_by_id(src_id)->receiver_preferences_.add_receiver(ptr);
+                } else {
+                    auto ptr = dynamic_cast<IPackageReceiver*>(&(*factory.find_storehouse_by_id(dest_id)));
+                    factory.find_worker_by_id(src_id)->receiver_preferences_.add_receiver(ptr);
+                }
+            }
+        } else continue;
     }
 
     return factory;
