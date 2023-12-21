@@ -1,6 +1,9 @@
 #include <stdexcept>
 #include <string>
+#include <iostream>
+#include <sstream>
 #include "factory.hpp"
+
 
 
 
@@ -83,3 +86,84 @@ void Factory::remove_receiver(NodeCollection<Node> &collection, ElementID id) {
         for (Ramp& sender: ramps_) sender.receiver_preferences_.remove_receiver(ptr);
     }
 }
+
+// IO
+
+ParsedLineData parse_line(std::string line){
+    ParsedLineData out;
+    std::vector<std::string> tokens;
+    std::string token;
+
+    std::istringstream token_stream(line);
+    char delimiter = ' ';
+    char id_delimiter = '=';
+    std::getline(token_stream, token, delimiter);
+    if(token == "LOADING_RAMP"){
+        out.type = RAMP;
+    }
+    if(token == "WORKER"){
+        out.type = WORKER;
+    }
+    if(token == "STOREHOUSE"){
+        out.type = STOREHOUSE;
+    }
+    if(token == "LINK"){
+        out.type = LINK;
+    }
+
+    while (std::getline(token_stream, token, delimiter)) {
+        std::string key = token.substr(0, token.find(id_delimiter));
+        std::string id = token.substr(token.find(id_delimiter), token.size()-1);
+        out.map.insert(std::make_pair(key,id));
+    }
+    return out;
+}
+
+Factory load_factory_structure(std::istream& is){
+
+    Factory factory;
+    std::string line;
+
+    while (std::getline(is, line)){
+        if(line[0] == ';' || line.empty()){
+            continue;
+        }
+        ParsedLineData elem = parse_line(line);
+
+        if(elem.type == RAMP){
+            ElementID id = (unsigned)std::stoi((*elem.map.find("ramp-id")).second);
+            TimeOffset di = std::stoi((*elem.map.find("delivery-interval")).second);
+            factory.add_ramp(Ramp(id,di));
+        }
+
+        if(elem.type == WORKER){
+            ElementID id = (unsigned)std::stoi((*elem.map.find("worker-id")).second);
+            TimeOffset pt = std::stoi((*elem.map.find("processing-time")).second);
+            std::string unt_pt = (*elem.map.find("queue-type")).second;
+            PackageQueueType typeQueue;
+
+            typeQueue = (*elem.map.find("queue-type")).second == "LIFO" ? PackageQueueType::LIFO : PackageQueueType::FIFO;
+
+            std::unique_ptr<PackageQueue> q = std::make_unique<PackageQueue>(PackageQueue(typeQueue));
+            std::unique_ptr<IPackageQueue> qr = std::move(q);
+
+            factory.add_worker(Worker(id, pt, std::move(qr)));
+        }
+
+        if(elem.type == STOREHOUSE){
+            ElementID id = (unsigned)std::stoi((*elem.map.find("storehouse-id")).second);
+            factory.add_storehouse(Storehouse(id));
+        }
+
+        if(elem.type == LINK){
+
+        }
+
+    }
+    return factory;
+}
+
+//void save_factory_structure(Factory& factory, std::ostream& os){
+//    os << "; == LOADING RAMPS" << std::endl;
+//    os.put(os.widen('\n'));
+//}
