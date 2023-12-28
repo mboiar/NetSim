@@ -56,12 +56,14 @@ void Worker::do_work(Time t) {
     if (pst_ == 0){ // worker is idle, start work
         if (!q_->empty()){
             pst_ = t;
+            pbuffer_.emplace(q_->pop());
         } else {
             return;
         }
     }
     if (t - (pst_ + pd_ - 1) == 0){ // if work finished
-        push_package(std::move(q_->pop()));
+        push_package(std::move(pbuffer_.value()));
+        pbuffer_.reset();
         pst_ = 0;
     }
 }

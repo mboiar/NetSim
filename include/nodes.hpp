@@ -99,12 +99,14 @@ public:
     IPackageStockpile::const_iterator cbegin() const override { return q_->cbegin(); }
     IPackageStockpile::const_iterator cend() const override { return q_->cend(); }
     IPackageQueue* get_queue() const { return q_.get(); }
+    const std::optional<Package>& get_processing_buffer() const { return pbuffer_; }
 
 private:
     ElementID id_;
     TimeOffset pd_;
     std::unique_ptr<IPackageQueue> q_;
     Time pst_;
+    std::optional<Package> pbuffer_;
     static inline ReceiverType receiver_type_ = ReceiverType::Worker;
 
 };
