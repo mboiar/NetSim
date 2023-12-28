@@ -53,13 +53,13 @@ void generate_simulation_turn_report(const Factory& factory, std::ostream& os, T
     for(auto i = factory.worker_cbegin(); i != factory.worker_cend(); i++){
         os << "\nWORKER #" << (*i).get_id() << "\n";
 
-        // PBuffer
+        // PBuffer - D
         if(!(*i).get_processing_buffer().has_value())
             os << "  PBuffer: (empty)\n";
         else
             os << "  PBuffer: #" << (*i).get_processing_buffer()->get_id() << " (pt = " << (*i).get_package_processing_start_time() << ")\n";
 
-        // Queue
+        // Queue - U
         if((*i).get_queue()->cbegin() == (*i).get_queue()->cend())
             os << "  Queue: (empty)\n";
         else{
@@ -70,14 +70,14 @@ void generate_simulation_turn_report(const Factory& factory, std::ostream& os, T
             os << "\n";
         }
 
-        // SBuffer
+        // SBuffer - P
         if(!(*i).get_sending_buffer().has_value())
             os << "  SBuffer: (empty)\n";
         else
             os << "  SBuffer: #" << (*i).get_sending_buffer()->get_id() << "\n";
     }
 
-    // Storehouse
+    // Storehouse - A
     os << "\n\n== STOREHOUSES ==\n\n";
     for(auto i = factory.storehouse_cbegin(); i != factory.storehouse_cend(); i++){
         os << "STOREHOUSE #" << (*i).get_id() << "\n";
