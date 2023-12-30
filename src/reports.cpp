@@ -27,13 +27,27 @@ void generate_structure_report(const Factory& factory, std::ostream& os){
         os << "  Queue type: " << queue_type << "\n";
         os << "  Receivers:\n";
 
-        for(auto receiver_preference : i->receiver_preferences_){
+        std::vector<ElementID> receivers_workers;
+        std::vector<ElementID> receivers_storehouses;
+
+        for(auto receiver_preference : (*i).receiver_preferences_){
             ReceiverType type = receiver_preference.first->get_receiver_type();
+
             if(type == ReceiverType::Worker)
-                os << "    worker #" << receiver_preference.first->get_id() << "\n";
+                receivers_workers.push_back(receiver_preference.first->get_id());
             else
-                os << "    storehouse #" << receiver_preference.first->get_id() << "\n";
+                receivers_storehouses.push_back(receiver_preference.first->get_id());
         }
+
+        std::sort(receivers_workers.begin(), receivers_workers.end());
+        std::sort(receivers_storehouses.begin(), receivers_storehouses.end());
+
+        for(auto receiver_worker : receivers_workers)
+            os << "    worker #" << receiver_worker << "\n";
+
+        for(auto receiver_storehouse : receivers_storehouses)
+            os << "    storehouse #" << receiver_storehouse << "\n";
+
         os << "\n";
     }
 
@@ -42,7 +56,6 @@ void generate_structure_report(const Factory& factory, std::ostream& os){
     for(auto i = factory.storehouse_cbegin(); i != factory.storehouse_cend(); i++){
         os << "\n" << "STOREHOUSE #" << (*i).get_id() << "\n";
     }
-
     os << "\n";
 }
 
