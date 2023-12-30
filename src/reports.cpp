@@ -39,6 +39,9 @@ void generate_structure_report(const Factory& factory, std::ostream& os){
                 receivers_storehouses.push_back(receiver_preference.first->get_id());
         }
 
+        std::sort(receivers_workers.begin(), receivers_workers.end());
+        std::sort(receivers_storehouses.begin(), receivers_storehouses.end());
+
         for(auto receiver_worker : receivers_workers)
             os << "    worker #" << receiver_worker << "\n";
 
