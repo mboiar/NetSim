@@ -1,5 +1,6 @@
 #ifndef IMPLEMENTATION_REPORTS_HPP
 #define IMPLEMENTATION_REPORTS_HPP
+#include "factory.hpp"
 
 #include <set>
 
@@ -28,8 +29,8 @@ private:
     TimeOffset to_;
 };
 
-void generate_structure_report();
+void generate_structure_report(const Factory& factory, std::ostream& os);
 
-void generate_simulation_turn_report();
+void generate_simulation_turn_report(const Factory& factory, std::ostream& os, Time t);
 
 #endif //IMPLEMENTATION_REPORTS_HPP

@@ -66,6 +66,7 @@ private:
         VISITED,
         VERIFIED
     };
+
     bool has_reachable_storehouse(const PackageSender* sender, std::map<const PackageSender*, NodeColor>& node_colors);
     NodeCollection<Ramp> ramps_;
     NodeCollection<Worker> workers_;
@@ -74,6 +75,23 @@ private:
     void remove_receiver(NodeCollection<Node>& collection, ElementID id);
 };
 
-// zapis i odczyt
+enum ElementType {
+    RAMP,
+    WORKER,
+    STOREHOUSE,
+    LINK
+};
+
+struct ParsedLineData
+{
+    ElementType type;
+    std::map<std::string,std::string> map;
+};
+
+ParsedLineData parse_line(std::string line);
+
+Factory load_factory_structure(std::istream& is);
+
+void save_factory_structure(Factory& factory, std::ostream& os);
 
 #endif //IMPLEMENTATION_FACTORY_HPP
