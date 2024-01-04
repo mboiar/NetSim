@@ -4,22 +4,52 @@
 #include "reports.hpp"
 
 void generate_structure_report(const Factory& factory, std::ostream& os){
+    // RAMPS ----------------
     os << "\n== LOADING RAMPS ==\n\n";
 
-    for(auto i = factory.ramp_cbegin(); i != factory.ramp_cend(); i++){
-        os << "LOADING RAMP #" << (*i).get_id() << "\n";
-        os << "  Delivery interval: " << (*i).get_delivery_interval() << "\n";
+    std::vector<ElementID> ramps_id;
+
+    for (auto i = factory.ramp_cbegin(); i != factory.ramp_cend(); i++)
+        ramps_id.push_back((*i).get_id());
+
+    std::sort(ramps_id.begin(), ramps_id.end());
+
+    for(unsigned int ramp_i : ramps_id){
+        auto i = factory.find_ramp_by_id(ramp_i);
+
+        os << "LOADING RAMP #" << i->get_id() << "\n";
+        os << "  Delivery interval: " << i->get_delivery_interval() << "\n";
         os << "  Receivers:\n";
 
-        for(auto receiver_preference : i->receiver_preferences_){
-            os << "    worker #" << receiver_preference.first->get_id() << "\n";
-        }
+        std::vector<ElementID> receivers_workers;
+
+        for(auto receiver_preference : (*i).receiver_preferences_)
+            receivers_workers.push_back(receiver_preference.first->get_id());
+
+        std::sort(receivers_workers.begin(), receivers_workers.end());
+
+        for(auto receiver_worker : receivers_workers)
+            os << "    worker #" << receiver_worker << "\n";
+
         os << "\n";
     }
 
+    ramps_id.clear();
+
+    // WORKERS ----------------
+
     os << "\n== WORKERS ==\n\n";
 
-    for(auto i = factory.worker_cbegin(); i != factory.worker_cend(); i++){
+    std::vector<ElementID> workers_id;
+
+    for (auto i = factory.worker_cbegin(); i != factory.worker_cend(); i++)
+        workers_id.push_back((*i).get_id());
+
+    std::sort(workers_id.begin(), workers_id.end());
+
+    for(unsigned int worker_i : workers_id){
+        auto i = factory.find_worker_by_id(worker_i);
+
         std::string queue_type = (*i).get_queue()->get_queue_type() == PackageQueueType::FIFO ? "FIFO" : "LIFO";
 
         os << "WORKER #" << (*i).get_id() << "\n";
@@ -42,21 +72,35 @@ void generate_structure_report(const Factory& factory, std::ostream& os){
         std::sort(receivers_workers.begin(), receivers_workers.end());
         std::sort(receivers_storehouses.begin(), receivers_storehouses.end());
 
-        for(auto receiver_worker : receivers_workers)
-            os << "    worker #" << receiver_worker << "\n";
-
         for(auto receiver_storehouse : receivers_storehouses)
             os << "    storehouse #" << receiver_storehouse << "\n";
+
+        for(auto receiver_worker : receivers_workers)
+            os << "    worker #" << receiver_worker << "\n";
 
         os << "\n";
     }
 
+    workers_id.clear();
+
+    // STOREHOUSES ---------------
+
     os << "\n== STOREHOUSES ==\n";
 
-    for(auto i = factory.storehouse_cbegin(); i != factory.storehouse_cend(); i++){
+    std::vector<ElementID> storehouses_id;
+
+    for (auto i = factory.storehouse_cbegin(); i != factory.storehouse_cend(); i++)
+        storehouses_id.push_back((*i).get_id());
+
+    std::sort(storehouses_id.begin(), storehouses_id.end());
+
+    for(unsigned int storehouse_i : storehouses_id){
+        auto i = factory.find_storehouse_by_id(storehouse_i);
         os << "\n" << "STOREHOUSE #" << (*i).get_id() << "\n";
     }
     os << "\n";
+
+    storehouses_id.clear();
 }
 
 void generate_simulation_turn_report(const Factory& factory, std::ostream& os, Time t){

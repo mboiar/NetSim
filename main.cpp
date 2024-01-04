@@ -24,12 +24,14 @@ int main(){
     r2.receiver_preferences_.add_receiver(&(*factory.find_worker_by_id(1)));
     r2.receiver_preferences_.add_receiver(&(*factory.find_worker_by_id(2)));
 
-    Worker& w1 = *(factory.find_worker_by_id(1));
+    Worker& w1 = *(factory.find_worker_by_id(2));
     w1.receiver_preferences_.add_receiver(&(*factory.find_storehouse_by_id(1)));
 
-    Worker& w2 = *(factory.find_worker_by_id(2));
+    Worker& w2 = *(factory.find_worker_by_id(1));
     w2.receiver_preferences_.add_receiver(&(*factory.find_storehouse_by_id(2)));
     w2.receiver_preferences_.add_receiver(&(*factory.find_storehouse_by_id(1)));
+    w2.receiver_preferences_.add_receiver(&(*factory.find_worker_by_id(1)));
+    w2.receiver_preferences_.add_receiver(&(*factory.find_worker_by_id(2)));
 
     std::ostringstream oss;
 
