@@ -107,7 +107,14 @@ void generate_simulation_turn_report(const Factory& factory, std::ostream& os, T
     os << "=== [ Turn: " << t <<" ] ===\n";
 
     os << "\n== WORKERS ==\n";
-    for(auto i = factory.worker_cbegin(); i != factory.worker_cend(); i++){
+
+    std::vector<ElementID> workers_id;
+    for (auto i = factory.worker_cbegin(); i != factory.worker_cend(); i++)
+        workers_id.push_back((*i).get_id());
+    std::sort(workers_id.begin(), workers_id.end());
+
+    for(unsigned int worker_i : workers_id){
+        auto i = factory.find_worker_by_id(worker_i);
         os << "\nWORKER #" << (*i).get_id() << "\n";
 
         // PBuffer - D
@@ -134,9 +141,19 @@ void generate_simulation_turn_report(const Factory& factory, std::ostream& os, T
             os << "  SBuffer: #" << (*i).get_sending_buffer()->get_id() << "\n";
     }
 
+    workers_id.clear();
+
     // Storehouse - A
     os << "\n\n== STOREHOUSES ==\n\n";
-    for(auto i = factory.storehouse_cbegin(); i != factory.storehouse_cend(); i++){
+    std::vector<ElementID> storehouses_id;
+
+    for (auto i = factory.storehouse_cbegin(); i != factory.storehouse_cend(); i++)
+        storehouses_id.push_back((*i).get_id());
+
+    std::sort(storehouses_id.begin(), storehouses_id.end());
+
+    for(unsigned int storehouse_i : storehouses_id){
+        auto i = factory.find_storehouse_by_id(storehouse_i);
         os << "STOREHOUSE #" << (*i).get_id() << "\n";
 
         if((*i).cbegin() == (*i).cend())
@@ -149,4 +166,6 @@ void generate_simulation_turn_report(const Factory& factory, std::ostream& os, T
             os << "\n\n";
         }
     }
+
+    storehouses_id.clear();
 }
